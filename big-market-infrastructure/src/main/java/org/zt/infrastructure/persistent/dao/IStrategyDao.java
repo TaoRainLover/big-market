@@ -8,4 +8,11 @@ import java.util.List;
 @Mapper
 public interface IStrategyDao {
     List<StrategyPO> queryStrategyList();
+
+    /**
+     * 根据id进行查询
+     * @param strategyId
+     * @return
+     */
+    StrategyPO queryStrategyById(Long strategyId);
 }

@@ -1,6 +1,8 @@
 package org.zt.domain.strategy.repository;
 
 import org.zt.domain.strategy.model.entity.StrategyAwardEntity;
+import org.zt.domain.strategy.model.entity.StrategyEntity;
+import org.zt.domain.strategy.model.entity.StrategyRuleEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +21,15 @@ public interface IStrategyRepository {
      */
     List<StrategyAwardEntity> queryStrategyAwardListById(Long strategyId);
 
-    void storeStrategyAwardSearchRateTable(Long strategyId, int rateRange, Map<Integer, Integer> shuffleStrategyAwardSearchRateTable);
+    void storeStrategyAwardSearchRateTable(String strategyId, int rateRange, Map<Integer, Integer> shuffleStrategyAwardSearchRateTable);
 
     Integer getRateRange(Long strategyId);
 
-    Integer getStrategyAwardAssemble(Long strategyId, int rateKey);
+    Integer getRateRange(String key);
+
+    Integer getStrategyAwardAssemble(String strategyId, int rateKey);
+
+    StrategyEntity queryStrategyEntityByStrategyId(Long strategyId);
+
+    StrategyRuleEntity queryStrategyRule(Long strategyId, String ruleWeight);
 }
