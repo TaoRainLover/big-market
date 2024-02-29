@@ -145,7 +145,7 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public StrategyAwardRuleModelVO queryStrategyAwardRuleModeVO(Long strategyId, Integer awardId) {
+    public StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId) {
         StrategyAwardPO strategyAwardPO = new StrategyAwardPO();
         strategyAwardPO.setStrategyId(strategyId);
         strategyAwardPO.setAwardId(awardId);

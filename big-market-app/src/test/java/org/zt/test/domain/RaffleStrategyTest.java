@@ -51,7 +51,7 @@ public class RaffleStrategyTest {
 
         // 通过反射 mock 规则中的值
         ReflectionTestUtils.setField(ruleWeightLogicFilter, "userScore", 40500L);
-        ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 10L);;
+        ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 0L);;
     }
 
     @Test
@@ -82,7 +82,7 @@ public class RaffleStrategyTest {
 
 
     /**
-     * 次数错校验，抽奖n次后解锁。100003 策略，你可以通过调整 @Before 的 setUp 方法中个人抽奖次数来验证。比如最开始设置0，之后设置10
+     * 次数锁校验，抽奖n次后解锁。100003 策略，你可以通过调整 @Before 的 setUp 方法中个人抽奖次数来验证。比如最开始设置0，之后设置10
      * ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 10L);
      */
     @Test

@@ -36,5 +36,5 @@ public interface IStrategyRepository {
 
     String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
 
-    StrategyAwardRuleModelVO queryStrategyAwardRuleModeVO(Long strategyId, Integer awardId);
+    StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
 }
