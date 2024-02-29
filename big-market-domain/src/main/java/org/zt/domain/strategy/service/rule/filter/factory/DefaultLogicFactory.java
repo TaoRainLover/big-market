@@ -1,4 +1,4 @@
-package org.zt.domain.strategy.service.rule.factory;
+package org.zt.domain.strategy.service.rule.filter.factory;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.zt.domain.strategy.model.entity.RuleActionEntity;
 import org.zt.domain.strategy.service.annotation.LogicStrategy;
-import org.zt.domain.strategy.service.rule.ILogicFilter;
+import org.zt.domain.strategy.service.rule.filter.ILogicFilter;
 
 import java.util.List;
 import java.util.Map;

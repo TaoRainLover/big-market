@@ -1,4 +1,4 @@
-package org.zt.domain.strategy.service.rule;
+package org.zt.domain.strategy.service.rule.filter;
 
 import org.zt.domain.strategy.model.entity.RuleActionEntity;
 import org.zt.domain.strategy.model.entity.RuleMatterEntity;

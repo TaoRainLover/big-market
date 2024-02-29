@@ -1,15 +1,14 @@
-package org.zt.domain.strategy.service.rule.impl;
+package org.zt.domain.strategy.service.rule.filter.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.zt.domain.strategy.model.entity.RaffleFactorEntity;
 import org.zt.domain.strategy.model.entity.RuleActionEntity;
 import org.zt.domain.strategy.model.entity.RuleMatterEntity;
 import org.zt.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import org.zt.domain.strategy.repository.IStrategyRepository;
 import org.zt.domain.strategy.service.annotation.LogicStrategy;
-import org.zt.domain.strategy.service.rule.ILogicFilter;
-import org.zt.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import org.zt.domain.strategy.service.rule.filter.ILogicFilter;
+import org.zt.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import org.zt.types.common.Constants;
 
 import javax.annotation.Resource;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.zt.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import org.zt.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import org.zt.types.common.Constants;
 
 import java.util.ArrayList;
