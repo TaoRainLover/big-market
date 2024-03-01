@@ -88,7 +88,7 @@ public class StrategyArmoryDispatchService implements IStrategyArmoryService, IS
             Integer awardId = strategyAwardEntity.getAwardId();
             BigDecimal awardRate = strategyAwardEntity.getAwardRate();
             // 计算出每个概率值需要存放到查找表的数量，循环填充
-            for (int i = 0; i < rateRange.multiply(awardRate).setScale(0, RoundingMode.CEILING).intValue(); i++) {
+            for (int i = 0; i < rateRange.multiply(awardRate).intValue(); i++) {
                 strategyAwardSearchRateTables.add(awardId);
             }
         }
