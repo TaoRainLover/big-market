@@ -16,4 +16,22 @@ public class ApiTest {
         log.info("测试完成");
     }
 
+    @Test
+    public void test_convert() {
+        double x  = 0.0009d;
+
+        System.out.println(convert(x));
+
+    }
+
+    private double convert(double min){
+        double current = min;
+        double max = 1;
+        while (current < 1){
+            current = current * 10;
+            max = max * 10;
+        }
+        return max;
+    }
+
 }
