@@ -79,7 +79,7 @@ public class StrategyArmoryDispatchService implements IStrategyArmoryService, IS
                 .map(StrategyAwardEntity::getAwardRate)
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
-        // 2. 用 1 * 1000 获得概率范围，百分位、千分位、万分位
+        // 2. 循环计算找到概率范围值
         BigDecimal rateRange = BigDecimal.valueOf(convert(minAwardRate.doubleValue()));
 
         // 3. 生成策略奖品概率查找表 「这里指需要在list集合中，存放上对应的奖品占位即可，占位越多等于概率越高」
