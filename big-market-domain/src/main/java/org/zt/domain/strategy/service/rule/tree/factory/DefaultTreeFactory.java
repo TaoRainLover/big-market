@@ -11,7 +11,6 @@ import org.zt.domain.strategy.service.rule.tree.ILogicTreeNode;
 import org.zt.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
 import org.zt.domain.strategy.service.rule.tree.factory.engine.impl.DecisionTreeEngine;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -42,17 +41,18 @@ public class DefaultTreeFactory {
     @NoArgsConstructor
     public static class TreeActionEntity {
         private RuleLogicCheckTypeVO ruleLogicCheckType;
-        private StrategyAwardData strategyAwardData;
+        private StrategyAwardVO strategyAwardData;
     }
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class StrategyAwardData {
+    public static class StrategyAwardVO {
         /** 抽奖奖品ID - 内部流转使用 */
         private Integer awardId;
         /** 抽奖奖品规则 */
         private String awardRuleValue;
     }
+
 }

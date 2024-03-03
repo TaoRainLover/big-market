@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RuleTreeNodeVO {
     // 规则树ID
-    private Integer treeId;
+    private String treeId;
     // 规则key
     private String ruleKey;
     // 规则描述

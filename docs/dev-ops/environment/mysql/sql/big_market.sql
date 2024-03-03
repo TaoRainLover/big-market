@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
 # 数据库: big_market
-# 生成时间: 2024-01-13 06:15:50 +0000
+# 生成时间: 2024-02-03 03:59:20 +0000
 # ************************************************************
 
 
@@ -28,14 +28,14 @@ use `big_market`;
 DROP TABLE IF EXISTS `award`;
 
 CREATE TABLE `award` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `award_id` int(8) NOT NULL COMMENT '抽奖奖品ID - 内部流转使用',
-  `award_key` varchar(32) NOT NULL COMMENT '奖品对接标识 - 每一个都是一个对应的发奖策略',
-  `award_config` varchar(32) NOT NULL COMMENT '奖品配置信息',
-  `award_desc` varchar(128) NOT NULL COMMENT '奖品内容描述',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+						 `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+						 `award_id` int(8) NOT NULL COMMENT '抽奖奖品ID - 内部流转使用',
+						 `award_key` varchar(32) NOT NULL COMMENT '奖品对接标识 - 每一个都是一个对应的发奖策略',
+						 `award_config` varchar(32) NOT NULL COMMENT '奖品配置信息',
+						 `award_desc` varchar(128) NOT NULL COMMENT '奖品内容描述',
+						 `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+						 `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+						 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `award` WRITE;
@@ -58,20 +58,107 @@ VALUES
 UNLOCK TABLES;
 
 
+# 转储表 rule_tree
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `rule_tree`;
+
+CREATE TABLE `rule_tree` (
+							 `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+							 `tree_id` varchar(32) NOT NULL COMMENT '规则树ID',
+							 `tree_name` varchar(64) NOT NULL COMMENT '规则树名称',
+							 `tree_desc` varchar(128) DEFAULT NULL COMMENT '规则树描述',
+							 `tree_node_rule_key` varchar(32) NOT NULL COMMENT '规则树根入口规则',
+							 `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+							 `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+							 PRIMARY KEY (`id`),
+							 UNIQUE KEY `uq_tree_id` (`tree_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `rule_tree` WRITE;
+/*!40000 ALTER TABLE `rule_tree` DISABLE KEYS */;
+
+INSERT INTO `rule_tree` (`id`, `tree_id`, `tree_name`, `tree_desc`, `tree_node_rule_key`, `create_time`, `update_time`)
+VALUES
+	(1,'tree_lock','规则树','规则树','rule_lock','2024-01-27 10:01:59','2024-02-03 10:39:54');
+
+/*!40000 ALTER TABLE `rule_tree` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 rule_tree_node
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `rule_tree_node`;
+
+CREATE TABLE `rule_tree_node` (
+								  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+								  `tree_id` varchar(32) NOT NULL COMMENT '规则树ID',
+								  `rule_key` varchar(32) NOT NULL COMMENT '规则Key',
+								  `rule_desc` varchar(64) NOT NULL COMMENT '规则描述',
+								  `rule_value` varchar(128) DEFAULT NULL COMMENT '规则比值',
+								  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+								  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+								  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `rule_tree_node` WRITE;
+/*!40000 ALTER TABLE `rule_tree_node` DISABLE KEYS */;
+
+INSERT INTO `rule_tree_node` (`id`, `tree_id`, `rule_key`, `rule_desc`, `rule_value`, `create_time`, `update_time`)
+VALUES
+	(1,'tree_lock','rule_lock','限定用户已完成N次抽奖后解锁','1','2024-01-27 10:03:09','2024-02-03 10:40:18'),
+	(2,'tree_lock','rule_luck_award','兜底奖品随机积分','1,100','2024-01-27 10:03:09','2024-02-03 10:40:19'),
+	(3,'tree_lock','rule_stock','库存扣减规则',NULL,'2024-01-27 10:04:43','2024-02-03 10:40:21');
+
+/*!40000 ALTER TABLE `rule_tree_node` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 rule_tree_node_line
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `rule_tree_node_line`;
+
+CREATE TABLE `rule_tree_node_line` (
+									   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+									   `tree_id` varchar(32) NOT NULL COMMENT '规则树ID',
+									   `rule_node_from` varchar(32) NOT NULL COMMENT '规则Key节点 From',
+									   `rule_node_to` varchar(32) NOT NULL COMMENT '规则Key节点 To',
+									   `rule_limit_type` varchar(8) NOT NULL COMMENT '限定类型；1:=;2:>;3:<;4:>=;5<=;6:enum[枚举范围];',
+									   `rule_limit_value` varchar(32) NOT NULL COMMENT '限定值（到下个节点）',
+									   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+									   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+									   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `rule_tree_node_line` WRITE;
+/*!40000 ALTER TABLE `rule_tree_node_line` DISABLE KEYS */;
+
+INSERT INTO `rule_tree_node_line` (`id`, `tree_id`, `rule_node_from`, `rule_node_to`, `rule_limit_type`, `rule_limit_value`, `create_time`, `update_time`)
+VALUES
+	(1,'tree_lock','rule_lock','rule_stock','EQUAL','ALLOW','0000-00-00 00:00:00','2024-02-03 10:40:25'),
+	(2,'tree_lock','rule_lock','rule_luck_award','EQUAL','TAKE_OVER','0000-00-00 00:00:00','2024-02-03 10:40:26'),
+	(3,'tree_lock','rule_stock','rule_luck_award','EQUAL','TAKE_OVER','0000-00-00 00:00:00','2024-02-03 10:40:27');
+
+/*!40000 ALTER TABLE `rule_tree_node_line` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # 转储表 strategy
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `strategy`;
 
 CREATE TABLE `strategy` (
-  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
-  `strategy_desc` varchar(128) NOT NULL COMMENT '抽奖策略描述',
-  `rule_models` varchar(256) DEFAULT NULL COMMENT '规则模型，rule配置的模型同步到此表，便于使用',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_strategy_id` (`strategy_id`)
+							`id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+							`strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
+							`strategy_desc` varchar(128) NOT NULL COMMENT '抽奖策略描述',
+							`rule_models` varchar(256) DEFAULT NULL COMMENT '规则模型，rule配置的模型同步到此表，便于使用',
+							`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+							`update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+							PRIMARY KEY (`id`),
+							KEY `idx_strategy_id` (`strategy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `strategy` WRITE;
@@ -79,9 +166,12 @@ LOCK TABLES `strategy` WRITE;
 
 INSERT INTO `strategy` (`id`, `strategy_id`, `strategy_desc`, `rule_models`, `create_time`, `update_time`)
 VALUES
-	(1,100001,'抽奖策略','rule_weight,rule_blacklist','2023-12-09 09:37:19','2023-12-09 18:06:34'),
-	(2,100003,'抽奖策略-验证lock',NULL,'2024-01-13 10:34:06','2024-01-13 10:34:06'),
-	(3,100002,'抽奖策略-非完整1概率',NULL,'2023-12-09 09:37:19','2024-01-13 11:08:20');
+	(1,100001,'抽奖策略','rule_blacklist,rule_weight','2023-12-09 09:37:19','2024-01-20 11:39:23'),
+	(2,100003,'抽奖策略-验证lock','rule_blacklist','2024-01-13 10:34:06','2024-01-20 15:03:19'),
+	(3,100002,'抽奖策略-非完整1概率',NULL,'2023-12-09 09:37:19','2024-02-03 10:14:17'),
+	(4,100004,'抽奖策略-随机抽奖',NULL,'2023-12-09 09:37:19','2024-01-20 19:21:03'),
+	(5,100005,'抽奖策略-测试概率计算',NULL,'2023-12-09 09:37:19','2024-01-21 21:54:58'),
+	(6,100006,'抽奖策略-规则树',NULL,'2024-02-03 09:53:40','2024-02-03 09:53:40');
 
 /*!40000 ALTER TABLE `strategy` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -93,20 +183,20 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `strategy_award`;
 
 CREATE TABLE `strategy_award` (
-  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
-  `award_id` int(8) NOT NULL COMMENT '抽奖奖品ID - 内部流转使用',
-  `award_title` varchar(128) NOT NULL COMMENT '抽奖奖品标题',
-  `award_subtitle` varchar(128) DEFAULT NULL COMMENT '抽奖奖品副标题',
-  `award_count` int(8) NOT NULL DEFAULT '0' COMMENT '奖品库存总量',
-  `award_count_surplus` int(8) NOT NULL DEFAULT '0' COMMENT '奖品库存剩余',
-  `award_rate` decimal(6,4) NOT NULL COMMENT '奖品中奖概率',
-  `rule_models` varchar(256) DEFAULT NULL COMMENT '规则模型，rule配置的模型同步到此表，便于使用',
-  `sort` int(2) NOT NULL DEFAULT '0' COMMENT '排序',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_strategy_id_award_id` (`strategy_id`,`award_id`)
+								  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+								  `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
+								  `award_id` int(8) NOT NULL COMMENT '抽奖奖品ID - 内部流转使用',
+								  `award_title` varchar(128) NOT NULL COMMENT '抽奖奖品标题',
+								  `award_subtitle` varchar(128) DEFAULT NULL COMMENT '抽奖奖品副标题',
+								  `award_count` int(8) NOT NULL DEFAULT '0' COMMENT '奖品库存总量',
+								  `award_count_surplus` int(8) NOT NULL DEFAULT '0' COMMENT '奖品库存剩余',
+								  `award_rate` decimal(6,4) NOT NULL COMMENT '奖品中奖概率',
+								  `rule_models` varchar(256) DEFAULT NULL COMMENT '规则模型，rule配置的模型同步到此表，便于使用',
+								  `sort` int(2) NOT NULL DEFAULT '0' COMMENT '排序',
+								  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+								  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+								  PRIMARY KEY (`id`),
+								  KEY `idx_strategy_id_award_id` (`strategy_id`,`award_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `strategy_award` WRITE;
@@ -128,7 +218,15 @@ VALUES
 	(12,100002,106,'增加dall-e-2画图模型',NULL,1,1,0.0100,'rule_random,rule_luck_award',3,'2023-12-09 09:46:39','2023-12-23 14:23:53'),
 	(13,100003,107,'增加dall-e-3画图模型','抽奖1次后解锁',200,200,0.0400,'rule_lock,rule_luck_award',7,'2023-12-09 09:45:38','2023-12-23 14:01:02'),
 	(14,100003,108,'增加100次使用','抽奖2次后解锁',199,199,0.0099,'rule_lock,rule_luck_award',8,'2023-12-09 09:46:02','2024-01-13 10:26:29'),
-	(15,100003,109,'解锁全部模型','抽奖6次后解锁',1,1,0.0001,'rule_lock,rule_luck_award',9,'2023-12-09 09:46:39','2023-12-09 12:20:50');
+	(15,100003,109,'解锁全部模型','抽奖6次后解锁',1,1,0.0001,'rule_lock,rule_luck_award',9,'2023-12-09 09:46:39','2023-12-09 12:20:50'),
+	(16,100004,109,'解锁全部模型','抽奖6次后解锁',1,1,1.0000,'rule_random',9,'2023-12-09 09:46:39','2024-01-20 19:19:50'),
+	(17,100005,101,'随机积分',NULL,80000,80000,0.0300,'rule_random',1,'2023-12-09 09:38:31','2024-01-21 21:56:51'),
+	(18,100005,102,'随机积分',NULL,80000,80000,0.0300,'rule_random',1,'2023-12-09 09:38:31','2024-01-21 22:19:43'),
+	(19,100005,103,'随机积分',NULL,80000,80000,0.0300,'rule_random',1,'2023-12-09 09:38:31','2024-01-21 22:19:45'),
+	(20,100005,104,'随机积分',NULL,80000,80000,0.0300,'rule_random',1,'2023-12-09 09:38:31','2024-01-21 22:19:48'),
+	(21,100005,105,'随机积分',NULL,80000,80000,0.0010,'rule_random',1,'2023-12-09 09:38:31','2024-01-21 22:25:24'),
+	(22,100006,101,'随机积分',NULL,3,3,0.0300,'tree_lock',1,'2023-12-09 09:38:31','2024-02-03 11:17:05'),
+	(23,100006,102,'随机积分',NULL,97,97,0.9700,'tree_lock',1,'2023-12-09 09:38:31','2024-02-03 11:17:10');
 
 /*!40000 ALTER TABLE `strategy_award` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -140,17 +238,17 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `strategy_rule`;
 
 CREATE TABLE `strategy_rule` (
-  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `strategy_id` int(8) NOT NULL COMMENT '抽奖策略ID',
-  `award_id` int(8) DEFAULT NULL COMMENT '抽奖奖品ID【规则类型为策略，则不需要奖品ID】',
-  `rule_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '抽象规则类型；1-策略规则、2-奖品规则',
-  `rule_model` varchar(16) NOT NULL COMMENT '抽奖规则类型【rule_random - 随机值计算、rule_lock - 抽奖几次后解锁、rule_luck_award - 幸运奖(兜底奖品)】',
-  `rule_value` varchar(256) NOT NULL COMMENT '抽奖规则比值',
-  `rule_desc` varchar(128) NOT NULL COMMENT '抽奖规则描述',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_strategy_id_award_id` (`strategy_id`,`award_id`)
+								 `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+								 `strategy_id` int(8) NOT NULL COMMENT '抽奖策略ID',
+								 `award_id` int(8) DEFAULT NULL COMMENT '抽奖奖品ID【规则类型为策略，则不需要奖品ID】',
+								 `rule_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '抽象规则类型；1-策略规则、2-奖品规则',
+								 `rule_model` varchar(16) NOT NULL COMMENT '抽奖规则类型【rule_random - 随机值计算、rule_lock - 抽奖几次后解锁、rule_luck_award - 幸运奖(兜底奖品)】',
+								 `rule_value` varchar(256) NOT NULL COMMENT '抽奖规则比值',
+								 `rule_desc` varchar(128) NOT NULL COMMENT '抽奖规则描述',
+								 `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+								 `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+								 PRIMARY KEY (`id`),
+								 KEY `idx_strategy_id_award_id` (`strategy_id`,`award_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `strategy_rule` WRITE;

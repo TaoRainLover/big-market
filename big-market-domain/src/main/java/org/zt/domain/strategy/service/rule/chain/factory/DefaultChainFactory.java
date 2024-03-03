@@ -1,5 +1,6 @@
 package org.zt.domain.strategy.service.rule.chain.factory;
 
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zt.domain.strategy.model.entity.StrategyEntity;
@@ -31,6 +32,7 @@ public class DefaultChainFactory {
      * @return
      */
     public ILogicChain openLogicChain(Long strategyId) {
+        // 查询对应策略配置的规则模型
         StrategyEntity strategyEntity = strategyRepository.queryStrategyEntityByStrategyId(strategyId);
         String[] ruleModels = strategyEntity.ruleModels();
 
@@ -48,6 +50,32 @@ public class DefaultChainFactory {
 
         // 责任链最后装填默认责任链
         current.appendNext(logicChainGroup.get("default"));
+        // 返回的是责任链的第一个处理逻辑
         return logicChain;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StrategyAwardVO {
+        /** 抽奖奖品ID - 内部流转使用 */
+        private Integer awardId;
+        /**  */
+        private String logicModel;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum LogicModel {
+
+        RULE_DEFAULT("rule_default", "默认抽奖"),
+        RULE_BLACKLIST("rule_blacklist", "黑名单抽奖"),
+        RULE_WEIGHT("rule_weight", "权重规则"),
+        ;
+
+        private final String code;
+        private final String info;
+
     }
 }

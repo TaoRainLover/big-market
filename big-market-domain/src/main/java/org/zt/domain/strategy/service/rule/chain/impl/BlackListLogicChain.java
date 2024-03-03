@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.zt.domain.strategy.repository.IStrategyRepository;
 import org.zt.domain.strategy.service.rule.chain.AbstractLogicChain;
+import org.zt.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import org.zt.types.common.Constants;
 
 import javax.annotation.Resource;
@@ -22,10 +23,13 @@ public class BlackListLogicChain extends AbstractLogicChain {
     private IStrategyRepository strategyRepository;
 
     @Override
-    public Integer logic(String userId, Long strategyId) {
+    public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-黑名单-开始 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
         // 查询规则值配置
         String ruleValue = strategyRepository.queryStrategyRuleValue(strategyId, ruleModel());
+        if (ruleValue == null || ruleValue.isEmpty()) {
+            throw new RuntimeException("策略对应黑名单规则配置错误：该策略配置了blacklist,但是未在数据库中配置对应的黑名单用户信息");
+        }
         String[] splitRuleValue = ruleValue.split(Constants.COLON);
         Integer awardId = Integer.parseInt(splitRuleValue[0]);
 
@@ -34,7 +38,10 @@ public class BlackListLogicChain extends AbstractLogicChain {
         for (String userBlackId : userBlackIds) {
             if (userId.equals(userBlackId)) {
                 log.info("抽奖责任链-黑名单-接管 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
-                return awardId;
+                return DefaultChainFactory.StrategyAwardVO.builder()
+                        .awardId(awardId)
+                        .logicModel(ruleModel())
+                        .build();
             }
         }
 
@@ -45,6 +52,6 @@ public class BlackListLogicChain extends AbstractLogicChain {
 
     @Override
     protected String ruleModel() {
-        return "rule_blacklist";
+        return DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode();
     }
 }

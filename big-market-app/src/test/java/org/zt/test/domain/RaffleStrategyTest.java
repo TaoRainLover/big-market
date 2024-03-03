@@ -4,8 +4,7 @@ import org.zt.domain.strategy.model.entity.RaffleAwardEntity;
 import org.zt.domain.strategy.model.entity.RaffleFactorEntity;
 import org.zt.domain.strategy.service.IRaffleStrategy;
 import org.zt.domain.strategy.service.armory.IStrategyArmoryService;
-import org.zt.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
-import org.zt.domain.strategy.service.rule.filter.impl.RuleWeightLogicFilter;
+import org.zt.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -30,14 +29,13 @@ public class RaffleStrategyTest {
     @Resource
     private IRaffleStrategy raffleStrategy;
 
-    @Resource
-    private RuleWeightLogicFilter ruleWeightLogicFilter;
 
     @Resource
     private IStrategyArmoryService strategyArmoryService;
 
     @Resource
-    private RuleLockLogicFilter ruleLockLogicFilter;
+    private RuleWeightLogicChain ruleWeightLogicChain;
+
 
     /**
      * 策略装配
@@ -46,19 +44,20 @@ public class RaffleStrategyTest {
     public void setUp() {
         // 策略装配 100001、100002、100003
         log.info("测试结果：{}", strategyArmoryService.assembleLotteryStrategy(100001L));
-        log.info("测试结果：{}", strategyArmoryService.assembleLotteryStrategy(100002L));
+        // log.info("测试结果：{}", strategyArmoryService.assembleLotteryStrategy(100002L));
         log.info("测试结果：{}", strategyArmoryService.assembleLotteryStrategy(100003L));
+        log.info("测试结果：{}", strategyArmoryService.assembleLotteryStrategy(100006L));
 
         // 通过反射 mock 规则中的值
-        ReflectionTestUtils.setField(ruleWeightLogicFilter, "userScore", 40500L);
-        ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 0L);;
+        ReflectionTestUtils.setField(ruleWeightLogicChain, "userScore", 4900L);
+
     }
 
     @Test
     public void test_performRaffle() {
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
                 .userId("xiaofuge")
-                .strategyId(100001L)
+                .strategyId(100006L)
                 .build();
 
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);

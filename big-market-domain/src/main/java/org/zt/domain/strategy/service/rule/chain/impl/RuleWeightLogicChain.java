@@ -2,11 +2,10 @@ package org.zt.domain.strategy.service.rule.chain.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.zt.domain.strategy.model.entity.RuleActionEntity;
-import org.zt.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import org.zt.domain.strategy.repository.IStrategyRepository;
 import org.zt.domain.strategy.service.armory.IStrategyDispatchService;
 import org.zt.domain.strategy.service.rule.chain.AbstractLogicChain;
+import org.zt.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import org.zt.types.common.Constants;
 
 import javax.annotation.Resource;
@@ -30,7 +29,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     // 根据用户ID查询用户抽奖消耗的积分值，本章节我们先写死为固定的值。后续需要从数据库中查询。
     public Long userScore = 0L;
     @Override
-    public Integer logic(String userId, Long strategyId) {
+    public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-权重-开始 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
         // 4000:102,103,104,105 5000:102,103,104,105,106,107 6000:102,103,104,105,106,107,108,109
         String ruleValue = strategyRepository.queryStrategyRuleValue(strategyId, ruleModel());
@@ -71,7 +70,10 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         if (null != nextValue) {
             Integer awardId = strategyDispatchService.getRandomAwardId(strategyId, analyticalValueGroup.get(nextValue));
             log.info("抽奖责任链-权重-接管 userId: {} strategyId: {} ruleModel: {} awardId: {}", userId, strategyId, ruleModel(), awardId);
-            return awardId;
+            return DefaultChainFactory.StrategyAwardVO.builder()
+                    .awardId(awardId)
+                    .logicModel(ruleModel())
+                    .build();
         }
 
         // 5. 过滤其他责任链
@@ -99,6 +101,6 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
 
     @Override
     protected String ruleModel() {
-        return "rule_weight";
+        return DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode();
     }
 }

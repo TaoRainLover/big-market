@@ -18,7 +18,7 @@ public class RuleLuckAwardLogicTreeNode implements ILogicTreeNode {
     @Override
     public DefaultTreeFactory.TreeActionEntity logic(String userId, Long StrategyId, Integer awardId) {
         // 兜底奖品
-        DefaultTreeFactory.StrategyAwardData strategyAwardData = DefaultTreeFactory.StrategyAwardData.builder()
+        DefaultTreeFactory.StrategyAwardVO strategyAwardData = DefaultTreeFactory.StrategyAwardVO.builder()
                 .awardId(101)
                 .awardRuleValue("1,100")
                 .build();

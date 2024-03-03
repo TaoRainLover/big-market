@@ -1,5 +1,7 @@
 package org.zt.domain.strategy.service.rule.chain;
 
+import org.zt.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+
 /**
  * @author: Tao
  * @Date: 2024/02/29 13:37
@@ -14,7 +16,7 @@ public interface ILogicChain {
      * @param strategyId 策略ID
      * @return 奖品ID
      */
-    Integer logic(String userId, Long strategyId);
+    DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId);
     ILogicChain next();
     ILogicChain appendNext(ILogicChain logicChain);
 }

@@ -3,6 +3,7 @@ package org.zt.domain.strategy.repository;
 import org.zt.domain.strategy.model.entity.StrategyAwardEntity;
 import org.zt.domain.strategy.model.entity.StrategyEntity;
 import org.zt.domain.strategy.model.entity.StrategyRuleEntity;
+import org.zt.domain.strategy.model.valobj.RuleTreeVO;
 import org.zt.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.util.List;
@@ -39,4 +40,11 @@ public interface IStrategyRepository {
     StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
 
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
+
+    /**
+     * 根据规则树ID查询构建规则树值对象
+     * @param treeId
+     * @return
+     */
+    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
 }

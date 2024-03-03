@@ -19,7 +19,7 @@ import org.checkerframework.checker.units.qual.N;
 @NoArgsConstructor
 public class RuleTreeNodeLineVO {
     // 规则树ID
-    private Integer treeId;
+    private String treeId;
     // 规则 key 节点 from
     private String ruleNodeFrom;
     // 规则 key 节点 to
