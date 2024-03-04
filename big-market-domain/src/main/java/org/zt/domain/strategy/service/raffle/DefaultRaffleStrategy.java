@@ -2,15 +2,21 @@ package org.zt.domain.strategy.service.raffle;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.zt.domain.strategy.model.entity.StrategyAwardEntity;
 import org.zt.domain.strategy.model.valobj.RuleTreeVO;
 import org.zt.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import org.zt.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 import org.zt.domain.strategy.repository.IStrategyRepository;
 import org.zt.domain.strategy.service.AbstractRaffleStrategy;
+import org.zt.domain.strategy.service.IRaffleAward;
+import org.zt.domain.strategy.service.IRaffleStock;
 import org.zt.domain.strategy.service.armory.IStrategyDispatchService;
 import org.zt.domain.strategy.service.rule.chain.ILogicChain;
 import org.zt.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import org.zt.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import org.zt.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
+
+import java.util.List;
 
 /**
  * @author: Tao
@@ -20,7 +26,7 @@ import org.zt.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngi
 
 @Slf4j
 @Service
-public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
+public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleStock, IRaffleAward {
 
     public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatchService strategyDispatch,
                                  DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
@@ -67,4 +73,34 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         return treeEngine.process(userId, strategyId, awardId);
     }
 
+    /**
+     * 更新数据库奖品库存
+     * @param strategyId 策略ID
+     * @param awardId    奖品ID
+     */
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        strategyRepository.updateStrategyAwardStock(strategyId, awardId);
+    }
+
+    /**
+     * 获取奖品库存消耗队列
+     *
+     * @return 奖品库存Key信息
+     * @throws InterruptedException 异常
+     */
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return strategyRepository.takeQueueValue();
+    }
+
+    /**
+     * 根据策略ID查询策略的奖品列表
+     * @param strategyId 策略ID
+     * @return
+     */
+    @Override
+    public List<StrategyAwardEntity> queryRaffleStrategyAwardList(Long strategyId) {
+        return strategyRepository.queryStrategyAwardList(strategyId);
+    }
 }

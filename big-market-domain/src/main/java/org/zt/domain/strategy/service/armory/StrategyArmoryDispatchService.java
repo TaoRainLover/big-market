@@ -6,6 +6,7 @@ import org.zt.domain.strategy.model.entity.StrategyAwardEntity;
 import org.zt.domain.strategy.model.entity.StrategyEntity;
 import org.zt.domain.strategy.model.entity.StrategyRuleEntity;
 import org.zt.domain.strategy.repository.IStrategyRepository;
+import org.zt.types.common.Constants;
 import org.zt.types.enums.ResponseCode;
 import org.zt.types.exception.AppException;
 
@@ -34,26 +35,34 @@ public class StrategyArmoryDispatchService implements IStrategyArmoryService, IS
      */
     @Override
     public boolean assembleLotteryStrategy(Long strategyId) {
-        // 0. 查询抽奖策略id下的所有的策略奖品
+        // 1. 查询抽奖策略id下的所有的策略奖品
         List<StrategyAwardEntity> strategyAwardEntityList = strategyRepository.queryStrategyAwardListById(strategyId);
-        // 1. 装配默认无权重的策略奖品配置
+
+        // 2.缓存奖品库存：用于decr扣减库存使用
+        for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntityList) {
+            Integer awardId = strategyAwardEntity.getAwardId();
+            Integer awardCount = strategyAwardEntity.getAwardCount();
+            cacheStrategyAwardCount(strategyId, awardId, awardCount);
+        }
+
+        // 3 装配默认无权重的策略奖品配置
         assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntityList);
 
-        // 2. 权重策略配置 - 适用于 rule-weight 权重规则配置
-        // 2.1 查询该策略配置是否具有权重配置
+        // 4 权重策略配置 - 适用于 rule-weight 权重规则配置
+        // 4.1 查询该策略配置是否具有权重配置
         StrategyEntity strategyEntity = strategyRepository.queryStrategyEntityByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight();
-        // 2.2 如果该策略不存在 'rule_weight' 规则模型配置，那么直接返回
+        // 4.2 如果该策略不存在 'rule_weight' 规则模型配置，那么直接返回
         if (null == ruleWeight) return true;
-        // 2.3 查询该策略下的策略规则模型
+        // 4.3 查询该策略下的策略规则模型
         StrategyRuleEntity strategyRuleEntity = strategyRepository.queryStrategyRule(strategyId, ruleWeight);
-        // 2.4 如果该策略对应的规则模型查询不存在，抛出异常
+        // 4.4 如果该策略对应的规则模型查询不存在，抛出异常
         if (null == strategyRuleEntity) {
             throw new AppException(ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getCode(), ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getInfo());
         }
-        // 2.5 获取权重值的映射表，比如4000权重可以抽取的奖品id有 [101, 102, 103, 104]
+        // 4.5 获取权重值的映射表，比如4000权重可以抽取的奖品id有 [101, 102, 103, 104]
         Map<String, List<Integer>> ruleWeightValueMap= strategyRuleEntity.getRuleWeightValues();
-        // 2.6 进行权重策略下的装配
+        // 4.6 进行权重策略下的装配
         Set<String> keys = ruleWeightValueMap.keySet();
         for (String key : keys) {
             List<Integer> ruleWeightValues = ruleWeightValueMap.get(key);
@@ -139,5 +148,23 @@ public class StrategyArmoryDispatchService implements IStrategyArmoryService, IS
         int rateRange = strategyRepository.getRateRange(key);
         // 通过生成的随机值，获取概率值奖品查找表的结果
         return strategyRepository.getStrategyAwardAssemble(key, new SecureRandom().nextInt(rateRange));
+    }
+
+
+    /**
+     * 缓存奖品库存：用于decr扣减库存使用
+     * @param strategyId
+     * @param awardId
+     * @param awardCount
+     */
+    private void cacheStrategyAwardCount(Long strategyId, Integer awardId, Integer awardCount) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        strategyRepository.cacheStrategyAwardCount(cacheKey, awardCount);
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        return strategyRepository.subtractionAwardStock(cacheKey);
     }
 }

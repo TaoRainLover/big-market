@@ -23,4 +23,12 @@ public interface IStrategyDispatchService {
      */
     Integer getRandomAwardId(Long strategyId, String ruleWeightValue);
 
+    /**
+     * 从Redis缓存中扣减奖品库存
+     * @param strategyId
+     * @param awardId
+     * @return
+     */
+    Boolean subtractionAwardStock(Long strategyId, Integer awardId);
+
 }

@@ -62,7 +62,8 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
          *      .orElse(null);
          */
         Long nextValue = analyticalSortedKeys.stream()
-                .filter(key -> userScore >= key)
+                .sorted(Comparator.reverseOrder())
+                .filter(analyticalSortedKeyValue -> userScore >= analyticalSortedKeyValue)
                 .findFirst()
                 .orElse(null);
 
