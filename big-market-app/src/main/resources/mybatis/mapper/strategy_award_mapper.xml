@@ -26,7 +26,7 @@
     <select id="queryStrategyAwardListById" parameterType="java.lang.Long" resultMap="dataMap">
         select strategy_id, award_id, award_count, award_count_surplus, award_rate
         from strategy_award
-        where strategy_id = #{strategy_id}
+        where strategy_id = #{strategyId}
     </select>
 
     <select id="queryStrategyAwardRuleModels" resultType="java.lang.String">

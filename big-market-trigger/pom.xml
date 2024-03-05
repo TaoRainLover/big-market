@@ -36,6 +36,11 @@
             <groupId>org.zt</groupId>
             <artifactId>big-market-domain</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.zt</groupId>
+            <artifactId>big-market-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

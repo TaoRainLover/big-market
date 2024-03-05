@@ -13,14 +13,18 @@ import org.zt.infrastructure.persistent.dao.*;
 import org.zt.infrastructure.persistent.po.*;
 import org.zt.infrastructure.persistent.redis.IRedisService;
 import org.zt.types.common.Constants;
+import org.zt.types.exception.AppException;
 
 import javax.annotation.Resource;
+import javax.management.loading.MLetContent;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.zt.types.enums.ResponseCode.UN_ASSEMBLED_STRATEGY_ARMORY;
 
 /**
  * @author: Tao
@@ -82,12 +86,16 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public Integer getRateRange(Long strategyId) {
-        return redisService.getValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + strategyId);
+        return getRateRange(String.valueOf(strategyId));
     }
 
     @Override
     public Integer getRateRange(String key) {
-        return redisService.getValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key);
+        String cacheKey = Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key;
+        if (!redisService.isExists(cacheKey)) {
+            throw new AppException(UN_ASSEMBLED_STRATEGY_ARMORY.getCode(), cacheKey + Constants.COLON + UN_ASSEMBLED_STRATEGY_ARMORY.getInfo());
+        }
+        return redisService.getValue(cacheKey);
     }
 
     @Override
@@ -271,7 +279,7 @@ public class StrategyRepository implements IStrategyRepository {
         // 优先从缓存中进行获取
         String cacheKey = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY + strategyId;
         List<StrategyAwardEntity> strategyAwardEntities = redisService.getValue(cacheKey);
-        if (null == strategyAwardEntities || strategyAwardEntities.isEmpty()) return strategyAwardEntities;
+        if (null != strategyAwardEntities && !strategyAwardEntities.isEmpty()) return strategyAwardEntities;
 
         // 从数据库中进行查询
         List<StrategyAwardPO> strategyAwardPOList = strategyAwardDao.queryStrategyAwardListByStrategyId(strategyId);
