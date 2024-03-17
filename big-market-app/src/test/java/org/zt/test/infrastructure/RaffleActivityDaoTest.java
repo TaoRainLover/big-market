@@ -30,4 +30,11 @@ public class RaffleActivityDaoTest {
         List<RaffleActivityPO> raffleActivityList = raffleActivityDao.queryRaffleActivityList();
         System.out.println(raffleActivityList.toString());
     }
+
+    @Test
+    public void test_queryRaffleActivityByActivityId() {
+        Long activityId = 100301L;
+        RaffleActivityPO raffleActivityPO = raffleActivityDao.queryRaffleActivityByActivityId(activityId);
+        System.out.println(raffleActivityPO.toString());
+    }
 }

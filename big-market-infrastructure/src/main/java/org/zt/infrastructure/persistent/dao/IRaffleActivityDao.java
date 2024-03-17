@@ -14,4 +14,7 @@ import java.util.List;
 @Mapper
 public interface IRaffleActivityDao {
     List<RaffleActivityPO> queryRaffleActivityList();
+
+    RaffleActivityPO queryRaffleActivityByActivityId(Long activityId);
+
 }

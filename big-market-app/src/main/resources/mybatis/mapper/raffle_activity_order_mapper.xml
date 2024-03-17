@@ -14,10 +14,23 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <!-- 插入活动订单数据 -->
+    <insert id="insert">
+        insert into raffle_activity_order (user_id, activity_id, activity_name, strategy_id, order_id, order_time, state, create_time, update_time)
+        values (#{userId}, #{activityId}, #{activityName}, #{strategyId}, #{orderId}, #{orderTime}, #{state}, now(), now())
+    </insert>
+
     <select id="queryList" resultMap="dataMap">
         select *
         from raffle_activity_order
         limit 10
+    </select>
+
+    <!-- 根据用户ID查询用户的抽奖活动订单数据 -->
+    <select id="queryRaffleActivityOrderByUserId" resultMap="dataMap">
+        select user_id, activity_id, activity_name, strategy_id, order_id, order_time, state
+        from raffle_activity_order
+        where user_id = #{userId}
     </select>
 
 </mapper>
