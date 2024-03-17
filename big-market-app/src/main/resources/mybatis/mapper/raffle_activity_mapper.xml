@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zt.infrastructure.persistent.dao.IRaffleActivityDao">
+    <resultMap id="dataMap" type="org.zt.infrastructure.persistent.po.RaffleActivityPO">
+        <id column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="activity_name" property="activityName"/>
+        <result column="activity_desc" property="activityDesc"/>
+        <result column="begin_date_time" property="beginDateTime"/>
+        <result column="end_date_time" property="endDateTime"/>
+        <result column="stock_count" property="stockCount"/>
+        <result column="stock_count_surplus" property="stockCountSurplus"/>
+        <result column="activity_count_id" property="activityCountId"/>
+        <result column="strategy_id" property="strategyId"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="queryRaffleActivityList" resultMap="dataMap">
+        select *
+        from raffle_activity
+                 limit 10
+    </select>
+
+</mapper>
